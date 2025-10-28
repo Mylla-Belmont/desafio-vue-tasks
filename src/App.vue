@@ -1,47 +1,36 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref } from 'vue'
+import logo1 from './assets/logos/Logo-CB-1.png'
+import logo2 from './assets/logos/Logo-CB-2.png'
+
+const theme = ref('light')
+
+function onClick() {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <v-responsive class="border rounded" max-height="300">
+    <v-app :theme="theme">
+      <v-row>
+        <v-app-bar class="pr-3">
+          <v-app-bar-title>
+            <v-img :src="theme === 'light' ? logo1 : logo2"
+              :srcset="theme === 'light' ? `${logo1} 1x, ${logo1} 2x` : `${logo2} 1x, ${logo2} 2x`" width="60"
+              height="60"></v-img>
+          </v-app-bar-title>
+          <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" text slim
+            @click="onClick">
+            Dark Mode
+          </v-btn>
+        </v-app-bar>
+      </v-row>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+      <v-main>
+        <v-container>
+        </v-container>
+      </v-main>
+    </v-app>
+  </v-responsive>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>

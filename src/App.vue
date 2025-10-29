@@ -11,6 +11,14 @@ function onClick() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
+function addColumn() {
+  const newColumnIndex = columns.value.length + 1
+  columns.value.push({
+    title: `Nova Coluna ${newColumnIndex}`,
+    tasks: []
+  })
+}
+
 function addTask(column: any) {
   const newId = Date.now() // gera ID único simples
   const today = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric' })
@@ -104,22 +112,27 @@ const columns = ref([
     <v-main>
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
+
           <v-col v-for="column in columns" :key="column.title"
-            class="bg-gray-100 rounded-lg px-2 py-2 border border-gray-300 mr-2">
-            <p class="text-gray-700 font-semibold text-sm mb-2">
+            class="rounded-lg border border-gray-300 bg-gray-100 px-2 py-2 mr-2">
+            <p class="font-semibold text-gray-700 text-sm mb-2">
               {{ column.title }}
             </p>
 
-            <draggable :list="column.tasks" item-key="id" :animation="200" group="tasks" :empty-insert-threshold="50"
-              class="min-h-[200px]">
+            <draggable :list="column.tasks" item-key="id" :animation="200" group="tasks" class="tasks-container">
               <template #item="{ element }">
-                <task-card :task="element" class="mt-3 cursor-move" />
+                <task-card :task="element" class="cursor-move mt-3 column-width" />
               </template>
             </draggable>
 
             <v-btn variant="tonal" prepend-icon="mdi-plus" block elevation="2" class="text-none mt-3"
               @click="addTask(column)">
               Adicionar nova tarefa
+            </v-btn>
+          </v-col>
+          <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
+            <v-btn prepend-icon="mdi-plus" variant="text" class="text-none" block @click="addColumn">
+              nova coluna
             </v-btn>
           </v-col>
         </v-row>
@@ -132,5 +145,20 @@ const columns = ref([
 .column-width {
   min-width: 320px;
   width: 320px;
+}
+
+.tasks-container {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.tasks-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 8px;
 }
 </style>

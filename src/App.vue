@@ -31,6 +31,19 @@ function addTask(column: any) {
   })
 }
 
+const showTaskModal = ref(false)
+const selectedTask = ref<any>(null)
+
+function openTaskModal(task: any) {
+  selectedTask.value = task
+  showTaskModal.value = true
+}
+
+function closeTaskModal() {
+  showTaskModal.value = false
+  selectedTask.value = null
+}
+
 const columns = ref([
   {
     title: "Backlog",
@@ -121,7 +134,9 @@ const columns = ref([
 
             <draggable :list="column.tasks" item-key="id" :animation="200" group="tasks" class="tasks-container">
               <template #item="{ element }">
-                <task-card :task="element" class="cursor-move mt-3 column-width" />
+                <div @click="openTaskModal(element)" style="cursor:pointer;">
+                  <task-card :task="element" class="task-card column-width mt-2" />
+                </div>
               </template>
             </draggable>
 
@@ -139,6 +154,25 @@ const columns = ref([
       </div>
     </v-main>
   </v-app>
+  <v-dialog v-model="showTaskModal" max-width="500px">
+    <v-card>
+      <v-card-title>
+        {{ selectedTask?.title }}
+      </v-card-title>
+
+      <v-card-text>
+        <p><strong>Data:</strong> {{ selectedTask?.date }}</p>
+        <p v-if="selectedTask?.type"><strong>Tipo:</strong> {{ selectedTask.type }}</p>
+        <!-- Adicione mais campos se necessário -->
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text @click="closeTaskModal">Fechar</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
 </template>
 
 <style scoped>

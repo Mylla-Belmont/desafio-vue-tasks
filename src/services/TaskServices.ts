@@ -1,39 +1,44 @@
 import axios from 'axios'
-import type { Column } from '../types/Models'
+import type { Column, Task, Relation } from '../types/Models'
 
-const API_URL = 'http://localhost:3000/columns'
+const API_URL = 'http://localhost:3000'
 
 export const TaskServices = {
-  getColumns() {
-    return axios.get<Column[]>(API_URL)
+  async getColumns(): Promise<Column[]> {
+    const response = await axios.get<Column[]>(`${API_URL}/column`)
+    return response.data
   },
-  async addColumn(column: Column | null | undefined): Promise<void> {
-    if (!column) {
-      throw new Error('Column cannot be null or undefined')
-    }
 
-    try {
-      await axios.post(API_URL, column)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(`Failed to add column: ${error.message}`)
-      } else {
-        throw error
-      }
-    }
+  async getTasks(): Promise<Task[]> {
+    const response = await axios.get<Task[]>(`${API_URL}/tasks`)
+    return response.data
   },
-  async updateColumn(id: number, column: Column): Promise<void> {
-    if (!column) {
-      throw new Error('Column cannot be null or undefined')
-    }
 
-    try {
-      await axios.put(`${API_URL}/${id}`, column)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(`Failed to update column with id ${id}: ${error.message}`)
-      }
-      throw error
-    }
+  async getRelations(): Promise<Relation[]> {
+    const response = await axios.get<Relation[]>(`${API_URL}/relations`)
+    return response.data
+  },
+
+  async addColumn(column: Column) {
+    return axios.post(`${API_URL}/column`, column)
+  },
+
+  async addTask(task: Task) {
+    return axios.post(`${API_URL}/tasks`, task)
+  },
+
+  async addRelation(relation: Relation) {
+    return axios.post(`${API_URL}/relations`, relation)
+  },
+
+  async updateTask(id: number, task: Task) {
+    return axios.put(`${API_URL}/tasks/${id}`, task)
+  },
+
+  async updateColumn(id: number, column: Column) {
+    return axios.put(`${API_URL}/column/${id}`, column)
+  },
+  async updateRelation(id: number, relation: Relation) {
+    return axios.put(`${API_URL}/relations/${id}`, relation)
   },
 }

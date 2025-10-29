@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { TaskServices } from './services/TaskServices'
-import type { Column, Task } from './types/Models'
+import type { Column, Task, Relation } from './types/Models'
 
 import KanbanColumn from './components/KanbanColumn.vue'
 import TopBar from './components/TopBar.vue'
 import TaskModal from './components/TaskModal.vue'
 
 const theme = ref('light')
+
 function toggleTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
+const tasks = ref<Task[]>([])
 const columns = ref<Column[]>([])
-
+const relations = ref<Relation[]>([])
 const creatingColumn = ref(false)
 const newColumnName = ref("")
 
 async function loadColumns() {
-  const response = await TaskServices.getColumns()
-  columns.value = response.data
+  relations.value = await TaskServices.getRelations()
+  columns.value = await TaskServices.getColumns()
+  tasks.value = await TaskServices.getTasks()
 }
 
 function startCreatingColumn() {
@@ -30,18 +33,16 @@ function startCreatingColumn() {
 async function confirmCreateColumn() {
   if (!newColumnName.value.trim()) return
 
-  const allColumnIds = columns.value.map(c => c.id!)
-  const newId = allColumnIds.length ? Math.max(...allColumnIds) + 1 : 1
+  const newId = columns.value.length ? Math.max(...columns.value.map(c => c.id!)) + 1 : 1
 
   const newColumn: Column = {
     id: newId,
     title: newColumnName.value,
-    tasks: []
   }
+
   await TaskServices.addColumn(newColumn)
   await loadColumns()
   creatingColumn.value = false
-  newColumnName.value = ""
 }
 
 function cancelCreateColumn() {
@@ -49,18 +50,24 @@ function cancelCreateColumn() {
   newColumnName.value = ""
 }
 
-async function addTask(column: Column, taskName: string) {
-  const allTasksIds = columns.value.flatMap(c => c.tasks)
-  const newId = (allTasksIds.length ? Math.max(...allTasksIds.map(t => t.id!)) : 0) + 1
+async function addTask(taskName: string, column: Column) {
+
+  const newIdTask = tasks.value.length ? Math.max(...tasks.value.map(c => c.id!)) + 1 : 1
+  const newIdRelation = relations.value.length ? Math.max(...relations.value.map(c => c.id!)) + 1 : 1
 
   const newTask: Task = {
-    id: newId,
+    id: newIdTask,
     title: taskName,
     description: "",
     is_completed: false,
   }
-  const updatedColumn = { ...column, tasks: [...column.tasks, newTask] }
-  await TaskServices.updateColumn(column.id!, updatedColumn)
+
+  await TaskServices.addTask(newTask)
+  await TaskServices.addRelation({
+    id: newIdRelation,
+    column_id: column.id,
+    task_id: newTask.id
+  })
   await loadColumns()
 }
 
@@ -83,9 +90,9 @@ onMounted(() => loadColumns())
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
 
-          <KanbanColumn v-for="column in columns" :key="column.id" :title="column.title" :tasks="column.tasks"
-            :column="column" @add-task="addTask" @task-click="openTaskModal" />
-
+          <KanbanColumn v-for="value in columns" :key="value.id"
+            :tasks="tasks.filter(task => relations.some(r => r.column_id == value.id && r.task_id == task.id))"
+            :title="value.title" @add-task="addTask($event, value)" @task-click="openTaskModal" />
 
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
 

@@ -8,5 +8,10 @@ export interface Task {
 export interface Column {
   id: number
   title: string
-  tasks: Task[]
+}
+
+export interface Relation {
+  id: number
+  column_id: number
+  task_id: number
 }

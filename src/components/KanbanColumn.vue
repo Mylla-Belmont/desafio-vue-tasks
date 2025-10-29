@@ -2,16 +2,15 @@
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
-import type { Column, Task } from '../types/Models'
+import type { Task } from '../types/Models'
 
 const props = defineProps<{
-    title: string
     tasks: Task[]
-    column: Column
+    title: string
 }>()
 
 const emit = defineEmits<{
-    (e: 'add-task', column: Column, taskName: string): void
+    (e: 'add-task', title: string): void
     (e: 'task-click', task: Task): void
 }>()
 
@@ -25,7 +24,7 @@ function startCreatingTask() {
 
 function confirmCreateTask() {
     if (!newTaskTitle.value.trim()) return
-    emit("add-task", props.column, newTaskTitle.value)
+    emit("add-task", newTaskTitle.value)
     creatingTask.value = false
     newTaskTitle.value = ""
 }
@@ -38,7 +37,7 @@ function cancelCreateTask() {
 
 <template>
     <v-col class="rounded-lg border bg-gray-100 px-2 py-2 mr-2">
-        <p class="font-semibold text-gray-700 text-sm mb-2">{{ title }}</p>
+        <p class="font-semibold text-gray-700 text-sm mb-2">{{ props.title }}</p>
 
         <draggable :list="tasks" item-key="id" :animation="200" group="tasks" class="tasks-container">
             <template #item="{ element }">

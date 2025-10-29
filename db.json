@@ -1,42 +1,71 @@
 {
-  "columns": [
+  "column": [
     {
       "id": "1",
-      "title": "Em produção",
-      "tasks": [
-        {
-          "id": 1,
-          "title": "teste",
-          "description": "",
-          "is_completed": false
-        },
-        {
-          "id": 2,
-          "title": "tattest",
-          "description": "",
-          "is_completed": false
-        }
-      ]
+      "title": "Em produção"
     },
     {
       "id": "2",
-      "title": "Concluído",
-      "tasks": []
+      "title": "Concluído"
     },
     {
       "id": "3",
-      "title": "Review",
-      "tasks": []
+      "title": "Review"
+    },
+    {
+      "id": 4,
+      "title": "saasd"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Task 1"
+    },
+    {
+      "id": "2",
+      "title": "Task 2"
+    },
+    {
+      "id": "3",
+      "title": "Task 3"
     },
     {
       "id": "4",
-      "title": "ttt",
-      "tasks": []
+      "title": "Task 4"
     },
     {
-      "id": "5",
+      "id": 5,
       "title": "teste",
-      "tasks": []
+      "description": "",
+      "is_completed": false
+    }
+  ],
+  "relations": [
+    {
+      "id": "1",
+      "column_id": 1,
+      "task_id": 1
+    },
+    {
+      "id": "2",
+      "column_id": 1,
+      "task_id": 2
+    },
+    {
+      "id": "3",
+      "column_id": 2,
+      "task_id": 3
+    },
+    {
+      "id": "4",
+      "column_id": 3,
+      "task_id": 4
+    },
+    {
+      "id": 5,
+      "column_id": "2",
+      "task_id": 5
     }
   ]
 }

@@ -1,49 +1,42 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import logo1 from './assets/logos/Logo-CB-1.png'
-import logo2 from './assets/logos/Logo-CB-2.png'
-import TaskCard from './components/TaskCard.vue'
-import draggable from 'vuedraggable'
+import type { Column, Task } from './types/Models'
+import KanbanColumn from './components/KanbanColumn.vue'
+import TaskModal from '@/components/TaskModal.vue'
+import TopBar from '@/components/TopBar.vue'
 
 const theme = ref('light')
 
-function onClick() {
+function toggleTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
 function addColumn() {
   const newColumnIndex = columns.value.length + 1
   columns.value.push({
-    title: `Nova Coluna ${newColumnIndex}`,
+    title: `Nova Lista ${newColumnIndex}`,
     tasks: []
   })
 }
 
-function addTask(column: any) {
-  const newId = Date.now() // gera ID único simples
-  const today = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric' })
+function addTask(column: Column) {
+  const newId = Date.now()
 
   column.tasks.push({
     id: newId,
     title: "Nova tarefa",
-    date: today,
-    type: "Task"
+    description: "Descrição da nova tarefa",
+    is_completed: false
   })
 }
 
+const selectedTask = ref<Task | null>(null)
 const showTaskModal = ref(false)
-const selectedTask = ref<any>(null)
 
-function openTaskModal(task: any) {
+function openTaskModal(task: Task) {
   selectedTask.value = task
   showTaskModal.value = true
 }
-
-function closeTaskModal() {
-  showTaskModal.value = false
-  selectedTask.value = null
-}
-
 const columns = ref([
   {
     title: "Backlog",
@@ -51,8 +44,8 @@ const columns = ref([
       {
         id: 1,
         title: "Add discount code to checkout page",
-        date: "Sep 14",
-        type: "Feature Request"
+        description: "Sep 14",
+        is_completed: true
       }
     ]
   },
@@ -62,14 +55,14 @@ const columns = ref([
       {
         id: 6,
         title: "Design shopping cart dropdown",
-        date: "Sep 9",
-        type: "Design"
+        description: "Sep 9",
+        is_completed: true
       },
       {
         id: 7,
         title: "Add discount code to checkout page",
-        date: "Sep 14",
-        type: "Feature Request"
+        description: "Sep 14",
+        is_completed: false
       }
     ]
   },
@@ -79,7 +72,8 @@ const columns = ref([
       {
         id: 9,
         title: "Provide documentation on integrations",
-        date: "Sep 12"
+        description: "Sep 12",
+        is_completed: false
       }
     ]
   },
@@ -89,8 +83,8 @@ const columns = ref([
       {
         id: 14,
         title: "Add discount code to checkout page",
-        date: "Sep 14",
-        type: "Feature Request"
+        description: "Sep 14",
+        is_completed: false
       }
     ]
   }
@@ -99,54 +93,16 @@ const columns = ref([
 
 <template>
   <v-app :theme="theme" class="fluid fill-height">
-    <v-app-bar class="pr-3">
-      <v-row align="center" no-gutters class="ma-0 pa-0 flex-grow-1">
-        <v-col cols="auto" class="pa-0 pl-2">
-          <v-img :src="theme === 'light' ? logo1 : logo2" width="60" height="60" contain />
-        </v-col>
-
-        <v-col cols="auto" class="pa-0 ml-2">
-          <v-app-bar-title>
-            Kanban Vue.js
-          </v-app-bar-title>
-        </v-col>
-
-        <v-spacer></v-spacer>
-
-        <v-col cols="auto" class="pa-0">
-          <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" text slim
-            @click="onClick">
-            {{ theme === 'light' ? 'Dark Mode' : 'Light Mode' }}
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-app-bar>
+    <top-bar :theme="theme" @toggle-theme="toggleTheme" />
 
     <v-main>
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
+          <KanbanColumn v-for="(column, i) in columns" :key="i" :title="column.title" :tasks="column.tasks"
+            @add-task="addTask(column)" @task-click="openTaskModal" />
 
-          <v-col v-for="column in columns" :key="column.title"
-            class="rounded-lg border border-gray-300 bg-gray-100 px-2 py-2 mr-2">
-            <p class="font-semibold text-gray-700 text-sm mb-2">
-              {{ column.title }}
-            </p>
-
-            <draggable :list="column.tasks" item-key="id" :animation="200" group="tasks" class="tasks-container">
-              <template #item="{ element }">
-                <div @click="openTaskModal(element)" style="cursor:pointer;">
-                  <task-card :task="element" class="task-card column-width mt-2" />
-                </div>
-              </template>
-            </draggable>
-
-            <v-btn variant="tonal" prepend-icon="mdi-plus" block elevation="2" class="text-none mt-3"
-              @click="addTask(column)">
-              Adicionar nova tarefa
-            </v-btn>
-          </v-col>
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
-            <v-btn prepend-icon="mdi-plus" variant="text" class="text-none" block @click="addColumn">
+            <v-btn prepend-icon="mdi-plus" variant="text" block @click="addColumn">
               nova coluna
             </v-btn>
           </v-col>
@@ -154,45 +110,9 @@ const columns = ref([
       </div>
     </v-main>
   </v-app>
-  <v-dialog v-model="showTaskModal" max-width="500px">
-    <v-card>
-      <v-card-title>
-        {{ selectedTask?.title }}
-      </v-card-title>
 
-      <v-card-text>
-        <p><strong>Data:</strong> {{ selectedTask?.date }}</p>
-        <p v-if="selectedTask?.type"><strong>Tipo:</strong> {{ selectedTask.type }}</p>
-        <!-- Adicione mais campos se necessário -->
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="closeTaskModal">Fechar</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <task-modal v-model="showTaskModal" :task="selectedTask" />
 
 </template>
 
-<style scoped>
-.column-width {
-  min-width: 320px;
-  width: 320px;
-}
-
-.tasks-container {
-  max-height: 65vh;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.tasks-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.tasks-container::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 8px;
-}
-</style>
+<style scoped></style>

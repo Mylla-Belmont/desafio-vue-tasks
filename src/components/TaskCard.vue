@@ -1,27 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import CardTask from './CardTask.vue'
-
-interface Task {
-    id: number
-    title: string
-    date: string
-    type?: string
-}
+import type { Task } from '../types/Models'
 
 const props = defineProps<{
     task: Task
 }>()
 
-const badgeColor = computed(() => {
-    const mappings: Record<string, string> = {
-        Design: "purple",
-        "Feature Request": "teal",
-        Backend: "blue",
-        QA: "green"
-    }
-    return mappings[props.task.type ?? ""] || "teal"
-})
+const badgeColor = computed(() =>
+    props.task.is_completed ? "green" : "red"
+)
 </script>
 
 <template>
@@ -33,11 +21,11 @@ const badgeColor = computed(() => {
 
         <div class="flex mt-4 items-center">
             <span class="text-sm text-gray-600 dark:text-gray-300">
-                {{ props.task.date }}
+                {{ props.task.description }}
             </span>
 
-            <CardTask v-if="props.task.type" :color="badgeColor">
-                {{ props.task.type }}
+            <CardTask v-if="props.task.is_completed" :color="badgeColor">
+                {{ props.task.is_completed }}
             </CardTask>
         </div>
     </div>

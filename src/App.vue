@@ -1,33 +1,67 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { TaskServices } from './services/TaskServices'
 import type { Column, Task } from './types/Models'
+
 import KanbanColumn from './components/KanbanColumn.vue'
-import TaskModal from '@/components/TaskModal.vue'
-import TopBar from '@/components/TopBar.vue'
+import TopBar from './components/TopBar.vue'
+import TaskModal from './components/TaskModal.vue'
 
 const theme = ref('light')
-
 function toggleTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
-function addColumn() {
-  const newColumnIndex = columns.value.length + 1
-  columns.value.push({
-    title: `Nova Lista ${newColumnIndex}`,
-    tasks: []
-  })
+const columns = ref<Column[]>([])
+
+const creatingColumn = ref(false)
+const newColumnName = ref("")
+
+async function loadColumns() {
+  const response = await TaskServices.getColumns()
+  columns.value = response.data
 }
 
-function addTask(column: Column) {
-  const newId = Date.now()
+function startCreatingColumn() {
+  creatingColumn.value = true
+  newColumnName.value = ""
+}
 
-  column.tasks.push({
+async function confirmCreateColumn() {
+  if (!newColumnName.value.trim()) return
+
+  const allColumnIds = columns.value.map(c => c.id!)
+  const newId = allColumnIds.length ? Math.max(...allColumnIds) + 1 : 1
+
+  const newColumn: Column = {
     id: newId,
-    title: "Nova tarefa",
-    description: "Descrição da nova tarefa",
-    is_completed: false
-  })
+    title: newColumnName.value,
+    tasks: []
+  }
+  await TaskServices.addColumn(newColumn)
+  await loadColumns()
+  creatingColumn.value = false
+  newColumnName.value = ""
+}
+
+function cancelCreateColumn() {
+  creatingColumn.value = false
+  newColumnName.value = ""
+}
+
+async function addTask(column: Column, taskName: string) {
+  const allTasksIds = columns.value.flatMap(c => c.tasks)
+  const newId = (allTasksIds.length ? Math.max(...allTasksIds.map(t => t.id!)) : 0) + 1
+
+  const newTask: Task = {
+    id: newId,
+    title: taskName,
+    description: "",
+    is_completed: false,
+  }
+  const updatedColumn = { ...column, tasks: [...column.tasks, newTask] }
+  await TaskServices.updateColumn(column.id!, updatedColumn)
+  await loadColumns()
 }
 
 const selectedTask = ref<Task | null>(null)
@@ -37,58 +71,8 @@ function openTaskModal(task: Task) {
   selectedTask.value = task
   showTaskModal.value = true
 }
-const columns = ref([
-  {
-    title: "Backlog",
-    tasks: [
-      {
-        id: 1,
-        title: "Add discount code to checkout page",
-        description: "Sep 14",
-        is_completed: true
-      }
-    ]
-  },
-  {
-    title: "In Progress",
-    tasks: [
-      {
-        id: 6,
-        title: "Design shopping cart dropdown",
-        description: "Sep 9",
-        is_completed: true
-      },
-      {
-        id: 7,
-        title: "Add discount code to checkout page",
-        description: "Sep 14",
-        is_completed: false
-      }
-    ]
-  },
-  {
-    title: "Review",
-    tasks: [
-      {
-        id: 9,
-        title: "Provide documentation on integrations",
-        description: "Sep 12",
-        is_completed: false
-      }
-    ]
-  },
-  {
-    title: "Done",
-    tasks: [
-      {
-        id: 14,
-        title: "Add discount code to checkout page",
-        description: "Sep 14",
-        is_completed: false
-      }
-    ]
-  }
-])
+
+onMounted(() => loadColumns())
 </script>
 
 <template>
@@ -98,13 +82,28 @@ const columns = ref([
     <v-main>
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
-          <KanbanColumn v-for="(column, i) in columns" :key="i" :title="column.title" :tasks="column.tasks"
-            @add-task="addTask(column)" @task-click="openTaskModal" />
+
+          <KanbanColumn v-for="column in columns" :key="column.id" :title="column.title" :tasks="column.tasks"
+            :column="column" @add-task="addTask" @task-click="openTaskModal" />
+
 
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
-            <v-btn prepend-icon="mdi-plus" variant="text" block @click="addColumn">
-              nova coluna
-            </v-btn>
+
+            <template v-if="creatingColumn">
+              <v-text-field v-model="newColumnName" placeholder="Nome da coluna" dense autofocus
+                @keyup.enter="confirmCreateColumn" />
+              <div class="flex space-x-2 mt-1">
+                <v-btn size="small" variant="flat" @click="confirmCreateColumn">Salvar</v-btn>
+                <v-btn size="small" variant="text" @click="cancelCreateColumn">Cancelar</v-btn>
+              </div>
+            </template>
+
+            <template v-else>
+              <v-btn prepend-icon="mdi-plus" variant="text" block @click="startCreatingColumn">
+                Nova coluna
+              </v-btn>
+            </template>
+
           </v-col>
         </v-row>
       </div>
@@ -112,7 +111,4 @@ const columns = ref([
   </v-app>
 
   <task-modal v-model="showTaskModal" :task="selectedTask" />
-
 </template>
-
-<style scoped></style>

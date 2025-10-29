@@ -1,0 +1,29 @@
+{
+  "columns": [
+    {
+      "id": 1,
+      "title": "Em produção",
+      "tasks": []
+    },
+    {
+      "id": 2,
+      "title": "Concluído",
+      "tasks": []
+    },
+    {
+      "id": 3,
+      "title": "Review",
+      "tasks": []
+    },
+    {
+      "id": 4,
+      "title": "ttt",
+      "tasks": []
+    },
+    {
+      "id": 5,
+      "title": "teste",
+      "tasks": []
+    }
+  ]
+}

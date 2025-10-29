@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import CardTask from './CardTask.vue'
+import ChipStatusTask from './ChipStatusTask.vue'
 import type { Task } from '../types/Models'
 
 const props = defineProps<{
@@ -24,9 +24,9 @@ const badgeColor = computed(() =>
                 {{ props.task.description }}
             </span>
 
-            <CardTask v-if="props.task.is_completed" :color="badgeColor">
+            <ChipStatusTask v-if="props.task.is_completed" :color="badgeColor">
                 {{ props.task.is_completed }}
-            </CardTask>
+            </ChipStatusTask>
         </div>
     </div>
 </template>

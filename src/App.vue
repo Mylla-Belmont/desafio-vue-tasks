@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { TaskServices } from './services/TaskServices'
+
 import type { Column, Task, Relation } from './types/Models'
+import { useTaskStore } from './stores/TaskStore'
+import { useColumnStore } from './stores/ColumnStore'
+import { useRelationStore } from './stores/RelationStore'
 
 import KanbanColumn from './components/KanbanColumn.vue'
 import TopBar from './components/TopBar.vue'
@@ -13,17 +16,12 @@ function toggleTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
-const tasks = ref<Task[]>([])
-const columns = ref<Column[]>([])
-const relations = ref<Relation[]>([])
+const taskStore = useTaskStore()
+const columnStore = useColumnStore()
+const relationStore = useRelationStore()
+
 const creatingColumn = ref(false)
 const newColumnName = ref("")
-
-async function loadColumns() {
-  relations.value = await TaskServices.getRelations()
-  columns.value = await TaskServices.getColumns()
-  tasks.value = await TaskServices.getTasks()
-}
 
 function startCreatingColumn() {
   creatingColumn.value = true
@@ -33,15 +31,16 @@ function startCreatingColumn() {
 async function confirmCreateColumn() {
   if (!newColumnName.value.trim()) return
 
-  const newId = columns.value.length ? Math.max(...columns.value.map(c => c.id!)) + 1 : 1
+  const newId = columnStore.columns.length
+    ? (Math.max(...columnStore.columns.map(c => Number(c.id))) + 1).toString()
+    : "1";
 
   const newColumn: Column = {
     id: newId,
     title: newColumnName.value,
   }
 
-  await TaskServices.addColumn(newColumn)
-  await loadColumns()
+  await columnStore.addColumn(newColumn)
   creatingColumn.value = false
 }
 
@@ -51,9 +50,13 @@ function cancelCreateColumn() {
 }
 
 async function addTask(taskName: string, column: Column) {
+  const newIdTask = taskStore.tasks.length
+    ? (Math.max(...taskStore.tasks.map(t => Number(t.id))) + 1).toString()
+    : "1";
 
-  const newIdTask = tasks.value.length ? Math.max(...tasks.value.map(c => c.id!)) + 1 : 1
-  const newIdRelation = relations.value.length ? Math.max(...relations.value.map(c => c.id!)) + 1 : 1
+  const newIdRelation = relationStore.relations.length
+    ? (Math.max(...relationStore.relations.map(r => Number(r.id))) + 1).toString()
+    : "1";
 
   const newTask: Task = {
     id: newIdTask,
@@ -62,13 +65,23 @@ async function addTask(taskName: string, column: Column) {
     is_completed: false,
   }
 
-  await TaskServices.addTask(newTask)
-  await TaskServices.addRelation({
+  await taskStore.addTask(newTask)
+  await relationStore.addRelation({
     id: newIdRelation,
     column_id: column.id,
     task_id: newTask.id
   })
-  await loadColumns()
+}
+
+async function handleTaskMoved(taskId: string, newColumnId: string) {
+  const currentRelation: Relation | undefined = await relationStore.getRelationsByTaskId(taskId)
+
+  if (!currentRelation) return
+  const updatedRelation: Relation = {
+    ...currentRelation,
+    column_id: newColumnId
+  }
+  await relationStore.updateRelation(updatedRelation)
 }
 
 const selectedTask = ref<Task | null>(null)
@@ -79,7 +92,11 @@ function openTaskModal(task: Task) {
   showTaskModal.value = true
 }
 
-onMounted(() => loadColumns())
+onMounted(() => {
+  taskStore.fetchTasks()
+  columnStore.fetchColumns()
+  relationStore.fetchRelations()
+})
 </script>
 
 <template>
@@ -90,12 +107,12 @@ onMounted(() => loadColumns())
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
 
-          <KanbanColumn v-for="value in columns" :key="value.id"
-            :tasks="tasks.filter(task => relations.some(r => r.column_id == value.id && r.task_id == task.id))"
-            :title="value.title" @add-task="addTask($event, value)" @task-click="openTaskModal" />
+          <KanbanColumn v-for="column in columnStore.columns" :key="column.id"
+            :tasks="taskStore.tasks.filter(task => relationStore.relations.some(r => r.column_id == column.id && r.task_id == task.id))"
+            :title="column.title" :column-id="column.id" @add-task="addTask($event, column)" @task-click="openTaskModal"
+            @task-moved="handleTaskMoved" />
 
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
-
             <template v-if="creatingColumn">
               <v-text-field v-model="newColumnName" placeholder="Nome da coluna" dense autofocus
                 @keyup.enter="confirmCreateColumn" />
@@ -110,7 +127,6 @@ onMounted(() => loadColumns())
                 Nova coluna
               </v-btn>
             </template>
-
           </v-col>
         </v-row>
       </div>

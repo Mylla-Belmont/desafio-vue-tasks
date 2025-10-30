@@ -1,44 +1,55 @@
 import axios from 'axios'
-import type { Column, Task, Relation } from '../types/Models'
+import type { Task } from '../types/Models'
 
 const API_URL = 'http://localhost:3000'
 
 export const TaskServices = {
-  async getColumns(): Promise<Column[]> {
-    const response = await axios.get<Column[]>(`${API_URL}/column`)
-    return response.data
-  },
-
   async getTasks(): Promise<Task[]> {
-    const response = await axios.get<Task[]>(`${API_URL}/tasks`)
-    return response.data
+    try {
+      const response = await axios.get<Task[]>(`${API_URL}/tasks`)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar tasks:', error)
+      throw error
+    }
   },
 
-  async getRelations(): Promise<Relation[]> {
-    const response = await axios.get<Relation[]>(`${API_URL}/relations`)
-    return response.data
-  },
-
-  async addColumn(column: Column) {
-    return axios.post(`${API_URL}/column`, column)
+  async getTask(id: string): Promise<Task> {
+    try {
+      const response = await axios.get<Task>(`${API_URL}/tasks/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar task:', error)
+      throw error
+    }
   },
 
   async addTask(task: Task) {
-    return axios.post(`${API_URL}/tasks`, task)
+    try {
+      const response = await axios.post(`${API_URL}/tasks`, task)
+      console.log(response.data)
+      return response
+    } catch (error) {
+      console.error('Erro ao criar task:', error)
+      throw error
+    }
   },
 
-  async addRelation(relation: Relation) {
-    return axios.post(`${API_URL}/relations`, relation)
+  async updateTask(task: Task) {
+    try {
+      return await axios.put(`${API_URL}/tasks/${task.id}`, task)
+    } catch (error) {
+      console.error('Erro ao atualizar task:', error)
+      throw error
+    }
   },
 
-  async updateTask(id: number, task: Task) {
-    return axios.put(`${API_URL}/tasks/${id}`, task)
-  },
-
-  async updateColumn(id: number, column: Column) {
-    return axios.put(`${API_URL}/column/${id}`, column)
-  },
-  async updateRelation(id: number, relation: Relation) {
-    return axios.put(`${API_URL}/relations/${id}`, relation)
+  async deleteTask(id: string) {
+    try {
+      return await axios.delete(`${API_URL}/tasks/${id}`)
+    } catch (error) {
+      console.error('Erro ao remover task:', error)
+      throw error
+    }
   },
 }

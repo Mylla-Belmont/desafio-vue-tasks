@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 
 interface Task {
-    id: number
+    id: string
     title: string
     description: string
     is_completed: boolean

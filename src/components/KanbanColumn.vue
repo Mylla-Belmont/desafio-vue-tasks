@@ -2,16 +2,18 @@
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
-import type { Task } from '../types/Models'
+import type { Task, SortableTask } from '../types/Models'
 
 const props = defineProps<{
     tasks: Task[]
     title: string
+    columnId: string
 }>()
 
 const emit = defineEmits<{
     (e: 'add-task', title: string): void
     (e: 'task-click', task: Task): void
+    (e: 'task-moved', taskId: string, newColumnId: string): void
 }>()
 
 const creatingTask = ref(false)
@@ -33,13 +35,21 @@ function cancelCreateTask() {
     creatingTask.value = false
     newTaskTitle.value = ""
 }
+
+function onTaskMoved(evt: SortableTask) {
+    if (evt.added && props.columnId) {
+        const taskId = evt.added.element.id
+        emit('task-moved', taskId, props.columnId)
+    }
+}
 </script>
 
 <template>
     <v-col class="rounded-lg border bg-gray-100 px-2 py-2 mr-2">
-        <p class="font-semibold text-gray-700 text-sm mb-2">{{ props.title }}</p>
+        <p class="font-semibold text-gray-700 text-sm mb-2">{{ props.title }} </p>
 
-        <draggable :list="tasks" item-key="id" :animation="200" group="tasks" class="tasks-container">
+        <draggable :list="tasks" item-key="id" :animation="200" group="tasks" class="tasks-container"
+            @change="onTaskMoved">
             <template #item="{ element }">
                 <div @click="emit('task-click', element)" style="cursor:pointer;">
                     <task-card :task="element" class="task-card column-width mt-2" />

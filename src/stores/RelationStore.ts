@@ -41,6 +41,15 @@ export const useRelationStore = defineStore('relation', {
       }
     },
 
+    async getRelationsByColumnId(columnId: string) {
+      try {
+        return await this.relations.filter((r) => r.column_id === columnId)
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
+    },
+
     async addRelation(relation: Relation) {
       try {
         const newRelation = await RelationServices.addRelation(relation)
@@ -66,6 +75,18 @@ export const useRelationStore = defineStore('relation', {
         this.relations = this.relations.filter((r) => r.id !== relationId)
       } catch (err: any) {
         this.error = err.message || 'Erro ao remover relação'
+      }
+    },
+
+    async removeRelationsByTaskId(taskId: string) {
+      try {
+        const relationsToRemove = this.relations.filter((r) => r.task_id === taskId)
+        for (const relation of relationsToRemove) {
+          await RelationServices.deleteRelation(relation.id)
+        }
+        this.relations = this.relations.filter((r) => r.task_id !== taskId)
+      } catch (err: any) {
+        this.error = err.message || 'Erro ao remover relações'
       }
     },
   },

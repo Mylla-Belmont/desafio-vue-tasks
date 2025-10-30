@@ -21,12 +21,6 @@
       "is_completed": false
     },
     {
-      "id": "2",
-      "title": "Adicionar função de apagar tasks",
-      "description": "",
-      "is_completed": false
-    },
-    {
       "id": "3",
       "title": "Permitir cancelar criação de tasks apenas teclando 'Esc'",
       "description": "",
@@ -39,20 +33,20 @@
       "is_completed": false
     },
     {
-      "id": "5",
-      "title": "Esperando Camila acordar e testar tudo",
-      "description": "",
-      "is_completed": false
-    },
-    {
-      "id": "6",
-      "title": "Dormindo [Lucas]",
-      "description": "",
-      "is_completed": false
-    },
-    {
       "id": "7",
       "title": "ACORDAR LUCAS CEDO, TADINHO PRECISA DORMIR MAS PRECISA CORRER PRAS TASKS DA JIT",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "8",
+      "title": "excloi não sai pra lá",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "9",
+      "title": "oiee :)",
       "description": "",
       "is_completed": false
     }
@@ -62,11 +56,6 @@
       "id": "1",
       "column_id": "1",
       "task_id": "1"
-    },
-    {
-      "id": "2",
-      "column_id": "2",
-      "task_id": "2"
     },
     {
       "id": "3",
@@ -79,19 +68,19 @@
       "task_id": "4"
     },
     {
-      "id": "5",
-      "column_id": "2",
-      "task_id": "5"
-    },
-    {
-      "id": "6",
-      "column_id": "3",
-      "task_id": "6"
-    },
-    {
       "id": "7",
       "column_id": "1",
       "task_id": "7"
+    },
+    {
+      "id": "8",
+      "column_id": "2",
+      "task_id": "8"
+    },
+    {
+      "id": "9",
+      "column_id": "3",
+      "task_id": "9"
     }
   ]
 }

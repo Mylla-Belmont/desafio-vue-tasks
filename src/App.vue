@@ -73,6 +73,32 @@ async function addTask(taskName: string, column: Column) {
   })
 }
 
+async function updateTaskTitle(task: Task, newTitle: string) {
+  const updatedTask = { ...task, title: newTitle }
+  await taskStore.updateTask(updatedTask)
+}
+
+async function deleteTask(task: Task) {
+  await taskStore.removeTask(task.id)
+  await relationStore.removeRelationsByTaskId(task.id)
+}
+
+async function deleteColumn(columnId: string) {
+  const relations = await relationStore.getRelationsByColumnId(columnId)
+  for (const relation of relations) {
+    await taskStore.removeTask(relation.task_id)
+    await relationStore.removeRelation(relation.id)
+  }
+  await columnStore.removeColumn(columnId)
+}
+
+async function upadateColumn(idColumn: string, newTitle: string) {
+  const column = columnStore.columns.find(c => c.id === idColumn)
+  if (!column) return
+  const updatedColumn = { ...column, title: newTitle }
+  await columnStore.updateColumn(updatedColumn)
+}
+
 async function handleTaskMoved(taskId: string, newColumnId: string) {
   const currentRelation: Relation | undefined = await relationStore.getRelationsByTaskId(taskId)
 
@@ -110,7 +136,7 @@ onMounted(() => {
           <KanbanColumn v-for="column in columnStore.columns" :key="column.id"
             :tasks="taskStore.tasks.filter(task => relationStore.relations.some(r => r.column_id == column.id && r.task_id == task.id))"
             :title="column.title" :column-id="column.id" @add-task="addTask($event, column)" @task-click="openTaskModal"
-            @task-moved="handleTaskMoved" />
+            @task-moved="handleTaskMoved" @delete-column="deleteColumn" @update-column="upadateColumn" />
 
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
             <template v-if="creatingColumn">
@@ -133,5 +159,5 @@ onMounted(() => {
     </v-main>
   </v-app>
 
-  <task-modal v-model="showTaskModal" :task="selectedTask" />
+  <task-modal v-model="showTaskModal" :task="selectedTask" @delete="deleteTask" @update-title="updateTaskTitle" />
 </template>

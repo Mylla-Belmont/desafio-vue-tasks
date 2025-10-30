@@ -14,10 +14,14 @@ const emit = defineEmits<{
     (e: 'add-task', title: string): void
     (e: 'task-click', task: Task): void
     (e: 'task-moved', taskId: string, newColumnId: string): void
+    (e: 'delete-column', columnId: string): void
+    (e: 'update-column', columnId: string, newTitle: string): void
 }>()
 
 const creatingTask = ref(false)
+const editingTitle = ref(false)
 const newTaskTitle = ref("")
+const editedTitle = ref("")
 
 function startCreatingTask() {
     creatingTask.value = true
@@ -36,6 +40,28 @@ function cancelCreateTask() {
     newTaskTitle.value = ""
 }
 
+function excluirLista() {
+    emit('delete-column', props.columnId)
+}
+
+function editarLista() {
+    editedTitle.value = props.title
+    editingTitle.value = true
+}
+
+function salvarEdicao() {
+    if (!editedTitle.value.trim()) {
+        editingTitle.value = false
+        return
+    }
+    emit('update-column', props.columnId, editedTitle.value)
+    editingTitle.value = false
+}
+
+function cancelarEdicao() {
+    editingTitle.value = false
+}
+
 function onTaskMoved(evt: SortableTask) {
     if (evt.added && props.columnId) {
         const taskId = evt.added.element.id
@@ -46,8 +72,37 @@ function onTaskMoved(evt: SortableTask) {
 
 <template>
     <v-col class="rounded-lg border bg-gray-100 px-2 py-2 mr-2">
-        <p class="font-semibold text-gray-700 text-sm mb-2">{{ props.title }} </p>
+        <v-row>
+            <v-col cols="8" class="text-h7">
+                <template v-if="editingTitle">
+                    <v-text-field v-model="editedTitle" dense hide-details autofocus @keyup.enter="salvarEdicao"
+                        @blur="cancelarEdicao" />
+                </template>
+                <template v-else>
+                    {{ title }}
+                </template>
+            </v-col>
 
+            <v-col cols="4" class="text-end">
+                <v-menu>
+                    <template #activator="{ props }">
+                        <v-icon v-bind="props" icon="mdi-dots-horizontal" size="small" color="secondary"
+                            class="cursor-pointer" />
+                    </template>
+
+                    <v-list>
+                        <v-list-item prepend-icon="mdi-pencil" @click="editarLista">
+                            <v-list-item-title>Editar</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item prepend-icon="mdi-trash-can" @click="excluirLista">
+                            <v-list-item-title>Excluir</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </v-col>
+        </v-row>
+
+        <!-- tarefas -->
         <draggable :list="tasks" item-key="id" :animation="200" group="tasks" class="tasks-container"
             @change="onTaskMoved">
             <template #item="{ element }">

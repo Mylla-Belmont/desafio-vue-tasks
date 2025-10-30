@@ -10,6 +10,9 @@ import KanbanColumn from './components/KanbanColumn.vue'
 import TopBar from './components/TopBar.vue'
 import TaskModal from './components/TaskModal.vue'
 
+import { useToast } from './composables/useToast'
+import Toast from './components/ToastComponent.vue'
+
 const theme = ref('light')
 
 function toggleTheme() {
@@ -19,6 +22,7 @@ function toggleTheme() {
 const taskStore = useTaskStore()
 const columnStore = useColumnStore()
 const relationStore = useRelationStore()
+const notification = useToast()
 
 const creatingColumn = ref(false)
 const newColumnName = ref("")
@@ -29,7 +33,10 @@ function startCreatingColumn() {
 }
 
 async function confirmCreateColumn() {
-  if (!newColumnName.value.trim()) return
+  if (!newColumnName.value.trim()) {
+    notification.showToast('O nome da coluna não pode estar vazio', 'error')
+    return
+  }
 
   const newId = columnStore.columns.length
     ? (Math.max(...columnStore.columns.map(c => Number(c.id))) + 1).toString()
@@ -42,6 +49,7 @@ async function confirmCreateColumn() {
 
   await columnStore.addColumn(newColumn)
   creatingColumn.value = false
+  notification.showToast('Coluna criada com sucesso', 'success')
 }
 
 function cancelCreateColumn() {
@@ -50,6 +58,10 @@ function cancelCreateColumn() {
 }
 
 async function addTask(taskName: string, column: Column) {
+  if (!taskName.trim()) {
+    notification.showToast('O nome da tarefa não pode estar vazio', 'error')
+    return
+  }
   const newIdTask = taskStore.tasks.length
     ? (Math.max(...taskStore.tasks.map(t => Number(t.id))) + 1).toString()
     : "1";
@@ -71,6 +83,7 @@ async function addTask(taskName: string, column: Column) {
     column_id: column.id,
     task_id: newTask.id
   })
+  notification.showToast('Tarefa criada com sucesso', 'success')
 }
 
 async function deleteColumn(columnId: string) {
@@ -80,13 +93,18 @@ async function deleteColumn(columnId: string) {
     await relationStore.removeRelation(relation.id)
   }
   await columnStore.removeColumn(columnId)
+  notification.showToast('Coluna removida com sucesso', 'success')
 }
 
 async function upadateColumn(idColumn: string, newTitle: string) {
   const column = columnStore.columns.find(c => c.id === idColumn)
-  if (!column) return
+  if (!column) {
+    notification.showToast('Coluna não encontrada', 'error')
+    return
+  }
   const updatedColumn = { ...column, title: newTitle }
   await columnStore.updateColumn(updatedColumn)
+  notification.showToast('Coluna atualizada com sucesso', 'success')
 }
 
 async function handleTaskMoved(taskId: string, newColumnId: string) {
@@ -120,6 +138,7 @@ onMounted(() => {
     <top-bar :theme="theme" @toggle-theme="toggleTheme" />
 
     <v-main>
+      <Toast />
       <div class="px-4 py-6">
         <v-row class="flex-nowrap overflow-x-auto" no-gutters>
 

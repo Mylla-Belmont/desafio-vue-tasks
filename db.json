@@ -7,10 +7,6 @@
     {
       "id": "2",
       "title": "Em Andamento"
-    },
-    {
-      "id": "3",
-      "title": "Finalizadas"
     }
   ],
   "tasks": [
@@ -23,7 +19,7 @@
     {
       "id": "3",
       "title": "Permitir cancelar criação de tasks apenas teclando 'Esc'",
-      "description": "",
+      "description": "a",
       "is_completed": false
     },
     {
@@ -35,7 +31,7 @@
     {
       "id": "8",
       "title": "testesss",
-      "description": "testesssaaaaaaa\n",
+      "description": "",
       "is_completed": false
     }
   ],
@@ -47,12 +43,12 @@
     },
     {
       "id": "3",
-      "column_id": "1",
+      "column_id": "2",
       "task_id": "3"
     },
     {
       "id": "7",
-      "column_id": "3",
+      "column_id": "1",
       "task_id": "7"
     },
     {
@@ -61,14 +57,14 @@
       "task_id": "8"
     },
     {
-      "id": "9",
+      "id": "11",
       "column_id": "1",
       "task_id": "9"
     },
     {
-      "id": "10",
-      "column_id": "3",
-      "task_id": "9"
+      "id": "12",
+      "column_id": "1",
+      "task_id": "10"
     }
   ]
 }

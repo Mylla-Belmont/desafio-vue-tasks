@@ -3,6 +3,9 @@ import { ref, watch } from 'vue'
 import { useTaskStore } from '../stores/TaskStore'
 import type { Task } from '@/types/Models';
 import { useRelationStore } from '@/stores/RelationStore';
+import { useToast } from '../composables/useToast'
+
+const notification = useToast()
 
 const props = defineProps<{
     modelValue: boolean
@@ -41,15 +44,13 @@ function deleteTask() {
     taskStore.removeTask(props.task.id)
     useRelationStore().removeRelation(props.task.id)
     emit('update:modelValue', false)
+    notification.showToast('Tarefa excluída com sucesso', 'success')
 }
 
 async function saveTask() {
     if (!editedTitle.trim()) {
         editingTitle.value = false
-        return
-    }
-    if (!editedDescription.trim()) {
-        editingDescription.value = false
+        notification.showToast('O nome da tarefa não pode estar vazio', 'error')
         return
     }
     editingTitle.value = false
@@ -61,6 +62,7 @@ async function saveTask() {
     }
     await taskStore.updateTask(updatedTask)
     emit('update:modelValue', false)
+    notification.showToast('Tarefa atualizada com sucesso', 'success')
 }
 </script>
 
@@ -75,7 +77,7 @@ async function saveTask() {
                 </v-col>
             </v-row>
 
-            <v-card-text>
+            <v-card-text class="overflow-y-auto">
                 <v-textarea v-model="editedDescription" variant="outlined" density="compact" color="grey-lighten-1"
                     auto-grow rows="3" hide-details placeholder="Adicionar descrição..."
                     @focus="editingDescription = true" />

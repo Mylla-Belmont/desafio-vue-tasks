@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
 import type { Task, SortableTask } from '../types/Models'
+import { useToast } from '../composables/useToast'
+
+const notification = useToast()
 
 const props = defineProps<{
     tasks: Task[]
@@ -30,10 +33,14 @@ function startCreatingTask() {
 }
 
 function confirmCreateTask() {
-    if (!newTaskTitle.value.trim()) return
+    if (!newTaskTitle.value.trim()) {
+        notification.showToast('O nome da tarefa não pode estar vazio', 'error')
+        return
+    }
     emit("add-task", newTaskTitle.value)
     creatingTask.value = false
     newTaskTitle.value = ""
+    notification.showToast('Tarefa criada com sucesso', 'success')
 }
 
 function cancelCreateTask() {
@@ -53,10 +60,12 @@ function editarLista() {
 function salvarEdicao() {
     if (!editedTitle.value.trim()) {
         editingTitle.value = false
+        notification.showToast('O nome da coluna não pode estar vazio', 'error')
         return
     }
     emit('update-column', props.columnId, editedTitle.value)
     editingTitle.value = false
+    notification.showToast('Coluna atualizada com sucesso', 'success')
 }
 
 function cancelarEdicao() {

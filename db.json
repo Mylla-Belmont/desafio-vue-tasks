@@ -17,18 +17,12 @@
     {
       "id": "1",
       "title": "Finalizar modal de edição",
-      "description": "",
+      "description": "aaaaaa",
       "is_completed": false
     },
     {
       "id": "3",
       "title": "Permitir cancelar criação de tasks apenas teclando 'Esc'",
-      "description": "",
-      "is_completed": false
-    },
-    {
-      "id": "4",
-      "title": "Trocar todos os ids para strings",
       "description": "",
       "is_completed": false
     },
@@ -40,14 +34,8 @@
     },
     {
       "id": "8",
-      "title": "excloi não sai pra lá",
-      "description": "",
-      "is_completed": false
-    },
-    {
-      "id": "9",
-      "title": "oiee :)",
-      "description": "",
+      "title": "testesss",
+      "description": "testesssaaaaaaa\n",
       "is_completed": false
     }
   ],
@@ -63,13 +51,8 @@
       "task_id": "3"
     },
     {
-      "id": "4",
-      "column_id": "2",
-      "task_id": "4"
-    },
-    {
       "id": "7",
-      "column_id": "1",
+      "column_id": "3",
       "task_id": "7"
     },
     {
@@ -79,6 +62,11 @@
     },
     {
       "id": "9",
+      "column_id": "1",
+      "task_id": "9"
+    },
+    {
+      "id": "10",
       "column_id": "3",
       "task_id": "9"
     }

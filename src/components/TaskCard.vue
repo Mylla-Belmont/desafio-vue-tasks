@@ -1,26 +1,31 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import ChipStatusTask from './ChipStatusTask.vue'
 import type { Task } from '../types/Models'
 
 const props = defineProps<{
     task: Task
+    theme?: string
 }>()
 
 const badgeColor = computed(() =>
     props.task.is_completed ? "green" : "red"
 )
+
+const cardColor = computed(() =>
+    props.theme === "light" ? "yellow" : "blue"
+)
+
 </script>
 
 <template>
-    <div class="bg-white dark:bg-gray-900 shadow rounded px-3 pt-3 pb-5 border border-transparent">
-        <p class="text-gray-800 dark:text-gray-100 font-semibold font-sans tracking-wide text-sm">
+    <v-card class="rounded px-3 pt-3 pb-5" elevation="1" :color="cardColor">
+        <p class="font-semibold font-sans tracking-wide text-sm">
             {{ props.task.title }}
         </p>
 
-
         <div class="flex mt-4 items-center">
-            <span class="text-sm text-gray-600 dark:text-gray-300">
+            <span class="text-sm">
                 {{ props.task.description }}
             </span>
 
@@ -28,7 +33,5 @@ const badgeColor = computed(() =>
                 {{ props.task.is_completed }}
             </ChipStatusTask>
         </div>
-    </div>
+    </v-card>
 </template>
-
-<style scoped></style>

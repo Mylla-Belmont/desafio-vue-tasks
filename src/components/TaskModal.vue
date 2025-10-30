@@ -1,129 +1,96 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-
-interface Task {
-    id: string
-    title: string
-    description: string
-    is_completed: boolean
-}
+import { useTaskStore } from '../stores/TaskStore'
+import type { Task } from '@/types/Models';
+import { useRelationStore } from '@/stores/RelationStore';
 
 const props = defineProps<{
     modelValue: boolean
-    task: Task | null
+    task: Task
 }>()
+
+const taskStore = useTaskStore()
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
-    (e: 'delete', task: Task): void
-    (e: 'update-title', task: Task, newTitle: string): void
 }>()
 
 const internalModel = ref(props.modelValue)
 const editingDescription = ref(false)
-const editedDescription = ref("")
+let editedDescription = props.task.description || ""
 const editingTitle = ref(false)
-const editedTitle = ref("")
+let editedTitle = props.task.title || ""
 
 watch(() => props.modelValue, (v) => internalModel.value = v)
+
+watch(() => props.modelValue, (v) => {
+    internalModel.value = v
+    if (v && props.task) {
+        editedTitle = props.task.title
+        editedDescription = props.task.description
+        editingTitle.value = true
+        editingDescription.value = true
+    }
+})
 
 function close() {
     emit('update:modelValue', false)
 }
 
 function deleteTask() {
-    emit('delete', props.task as Task)
+    taskStore.removeTask(props.task.id)
+    useRelationStore().removeRelation(props.task.id)
     emit('update:modelValue', false)
 }
 
-function enableEditTitle() {
-    editedTitle.value = props.task?.title || ''
-    editingTitle.value = true
-}
-
-function enableEditDescription() {
-    editedDescription.value = props.task?.description || ''
-    editingDescription.value = true
-}
-
-function saveTitle() {
-    if (!editedTitle.value.trim()) {
+async function saveTask() {
+    if (!editedTitle.trim()) {
         editingTitle.value = false
         return
     }
-    editingTitle.value = false
-    emit('update-title', props.task as Task, editedTitle.value)
-}
-function cancelEditionTitle() {
-    editingTitle.value = false
-}
-
-function saveDescription() {
-    if (!editedDescription.value.trim()) {
+    if (!editedDescription.trim()) {
         editingDescription.value = false
         return
     }
+    editingTitle.value = false
     editingDescription.value = false
-    // emit('update-description', descricao.value)
+    const updatedTask = {
+        ...props.task,
+        title: editedTitle,
+        description: editedDescription
+    }
+    await taskStore.updateTask(updatedTask)
+    emit('update:modelValue', false)
 }
-
-function cancelEditingDescription() {
-    editingDescription.value = false
-}
-
 </script>
 
 <template>
     <v-dialog v-model="internalModel" max-width="500px" @update:modelValue="emit('update:modelValue', $event)">
-        <v-card>
+        <v-card class="overflow-hidden">
             <v-row class="align-center justify-space-between mt-2" no-gutters>
-                <v-col cols="10">
-                    <template v-if="editingTitle">
-                        <v-text-field class="ml-2" variant="outlined" density="compact" color="grey-lighten-1"
-                            v-model="editedTitle" dense hide-details autofocus @keyup.enter="saveTitle"
-                            @blur="cancelEditionTitle" />
-                    </template>
-                    <template v-else>
-                        <v-card-title class="text-h6 text-bold">
-                            {{ task?.title }}
-                        </v-card-title>
-                    </template>
-                </v-col>
-                <v-col cols="auto" class="mr-2">
-                    <v-icon icon="mdi-pencil" class="ml-1 cursor-pointer" size="small" color="secondary"
-                        @click="enableEditTitle" />
+                <v-col cols="12">
+                    <v-textarea class="ml-6 mr-6 mt-4 mb-2" variant="underlined" density="compact" auto-grow rows="1"
+                        color="grey-lighten-1" v-model="editedTitle" dense hide-details autofocus
+                        @keyup.enter="saveTask" />
                 </v-col>
             </v-row>
+
             <v-card-text>
-                <template v-if="editingDescription">
-                    <v-textarea v-model="editedDescription" variant="outlined" density="compact" color="grey-lighten-1"
-                        auto-grow rows="3" autofocus hide-details @keyup.enter="saveDescription"
-                        @blur="cancelEditingDescription" />
-                    <div class="mt-2 flex justify-end space-x-2">
-                        <v-btn size="small" variant="tonal" @click="saveDescription">Salvar</v-btn>
-                        <v-btn size="small" variant="text" class="ml-4"
-                            @click="cancelEditingDescription">Cancelar</v-btn>
-                    </div>
-                </template>
-                <template v-else>
-                    <v-col v-if="props.task?.description === ''">
-                        <v-icon size="small" class="mr-1 cursor-pointer"
-                            @click="enableEditDescription">mdi-plus</v-icon>
-                        {{ 'Adcionar descrição' }}
-                    </v-col>
-                    <v-col v-else>
-                        {{ props.task?.description }}
-                    </v-col>
-                </template>
+                <v-textarea v-model="editedDescription" variant="outlined" density="compact" color="grey-lighten-1"
+                    auto-grow rows="3" hide-details placeholder="Adicionar descrição..."
+                    @focus="editingDescription = true" />
             </v-card-text>
 
             <v-card-actions>
-                <v-row justify="end">
+                <v-row justify="space-between" align="center">
                     <v-col cols="auto">
-                        <v-btn variant="flat" color="error" @click="deleteTask">Excluir</v-btn>
+                        <v-icon icon="mdi-delete" class="cursor-pointer ml-3" color="error" size="large"
+                            @click="deleteTask" />
                     </v-col>
-                    <v-col cols="auto">
-                        <v-btn variant="tonal" @click="close">Fechar</v-btn>
+
+                    <v-col cols="auto" class="flex items-center space-x-2 mr-4">
+                        <v-btn variant="tonal" @click="close">Cancelar</v-btn>
+                        <v-btn variant="tonal" class="ml-2" @click="saveTask">Salvar</v-btn>
                     </v-col>
                 </v-row>
             </v-card-actions>

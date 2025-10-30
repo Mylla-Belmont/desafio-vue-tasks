@@ -8,6 +8,7 @@ const props = defineProps<{
     tasks: Task[]
     title: string
     columnId: string
+    theme?: string
 }>()
 
 const emit = defineEmits<{
@@ -107,7 +108,7 @@ function onTaskMoved(evt: SortableTask) {
             @change="onTaskMoved">
             <template #item="{ element }">
                 <div @click="emit('task-click', element)" style="cursor:pointer;">
-                    <task-card :task="element" class="task-card column-width mt-2" />
+                    <task-card :task="element" :theme:="theme" class="task-card column-width mt-2" />
                 </div>
             </template>
         </draggable>

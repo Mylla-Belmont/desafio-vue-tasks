@@ -23,9 +23,10 @@ npm install
 
 ```bash
 npm run dev
+json-server --watch db.json --port 3000
 ```
 
-4. Abra o navegador em `http://localhost:5173` (ou a porta indicada pelo Vite).
+4. Abra o navegador em `http://localhost:3000` (ou a porta indicada pelo Vite).
 
 ---
 

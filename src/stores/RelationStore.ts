@@ -52,6 +52,7 @@ export const useRelationStore = defineStore('relation', {
 
     async addRelation(relation: Relation) {
       try {
+        console.log(relation)
         const newRelation = await RelationServices.addRelation(relation)
         this.relations.push(newRelation.data)
       } catch (err: any) {

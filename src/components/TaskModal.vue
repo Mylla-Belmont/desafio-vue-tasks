@@ -25,6 +25,10 @@ let editedDescription = props.task.description || ""
 const editingTitle = ref(false)
 let editedTitle = props.task.title || ""
 
+const localTask = ref<Task>({ ...props.task })
+watch(() => props.task, (newTask) => {
+    localTask.value = { ...newTask }
+})
 watch(() => props.modelValue, (v) => internalModel.value = v)
 
 watch(() => props.modelValue, (v) => {
@@ -59,7 +63,8 @@ async function saveTask() {
     const updatedTask = {
         ...props.task,
         title: editedTitle,
-        description: editedDescription
+        description: editedDescription,
+        is_completed: localTask.value.is_completed
     }
     await taskStore.updateTask(updatedTask)
     emit('update:modelValue', false)
@@ -84,6 +89,11 @@ async function saveTask() {
                     auto-grow rows="3" hide-details placeholder="Adicionar descrição..."
                     @focus="editingDescription = true" />
             </v-card-text>
+
+            <div class="d-flex justify-start ml-5">
+                <v-checkbox v-model="localTask.is_completed" label="Tarefa concluída" color="grey-lighten-1"
+                    density="compact" />
+            </div>
 
             <v-card-actions>
                 <v-row justify="space-between" align="center">

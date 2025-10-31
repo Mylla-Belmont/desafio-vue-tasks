@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import ChipStatusTask from './ChipStatusTask.vue'
 import type { Task } from '../types/Models'
 
@@ -7,10 +6,6 @@ const props = defineProps<{
     task: Task
     theme?: string
 }>()
-
-const badgeColor = computed(() =>
-    props.task.is_completed ? "green" : "red"
-)
 
 </script>
 
@@ -21,7 +16,7 @@ const badgeColor = computed(() =>
         </p>
 
         <div class="flex mt-4 items-center">
-            <ChipStatusTask v-if="props.task.is_completed" :color="badgeColor">
+            <ChipStatusTask v-if="props.task.is_completed">
                 Finalizado
             </ChipStatusTask>
         </div>

@@ -2,7 +2,7 @@
   "theme": [
     {
       "id": "1",
-      "value": "dark"
+      "value": "light"
     }
   ],
   "columns": [
@@ -13,73 +13,21 @@
     {
       "id": "2",
       "title": "Em Andamento"
-    },
-    {
-      "id": "3",
-      "title": "asdasd"
     }
   ],
   "tasks": [
     {
-      "id": "1",
-      "title": "Finalizar modal de edição",
-      "description": "aaaaaa",
-      "is_completed": false
-    },
-    {
       "id": "3",
-      "title": "Permitir cancelar criação de tasks apenas teclando 'Esc'",
-      "description": "a",
-      "is_completed": false
-    },
-    {
-      "id": "7",
-      "title": "ACORDAR LUCAS CEDO, TADINHO PRECISA DORMIR MAS PRECISA CORRER PRAS TASKS DA JIT",
+      "title": "Tarefa 1",
       "description": "",
-      "is_completed": false
-    },
-    {
-      "id": "8",
-      "title": "testesss",
-      "description": "",
-      "is_completed": false
+      "is_completed": true
     }
   ],
   "relations": [
     {
       "id": "1",
       "column_id": "1",
-      "task_id": "1"
-    },
-    {
-      "id": "3",
-      "column_id": "2",
       "task_id": "3"
-    },
-    {
-      "id": "7",
-      "column_id": "1",
-      "task_id": "7"
-    },
-    {
-      "id": "8",
-      "column_id": "2",
-      "task_id": "8"
-    },
-    {
-      "id": "11",
-      "column_id": "1",
-      "task_id": "9"
-    },
-    {
-      "id": "12",
-      "column_id": "1",
-      "task_id": "10"
-    },
-    {
-      "id": "13",
-      "column_id": "1",
-      "task_id": "9"
     }
   ]
 }

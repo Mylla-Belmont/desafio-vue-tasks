@@ -2,32 +2,15 @@
   "theme": [
     {
       "id": "1",
-      "value": "light"
+      "value": "dark"
     }
   ],
   "columns": [
     {
       "id": "1",
-      "title": "Preparadas"
-    },
-    {
-      "id": "2",
-      "title": "Em Andamento"
+      "title": "Lista 1"
     }
   ],
-  "tasks": [
-    {
-      "id": "3",
-      "title": "Tarefa 1",
-      "description": "",
-      "is_completed": true
-    }
-  ],
-  "relations": [
-    {
-      "id": "1",
-      "column_id": "1",
-      "task_id": "3"
-    }
-  ]
+  "tasks": [],
+  "relations": []
 }

@@ -144,7 +144,7 @@ onMounted(() => {
             :title="column.title" :column-id="column.id" @add-task="addTask($event, column)" @task-click="openTaskModal"
             @task-moved="handleTaskMoved" @delete-column="deleteColumn" @update-column="updateColumn" />
 
-          <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
+          <v-col class="kanban-column bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
             <template v-if="creatingColumn">
               <v-text-field v-model="newColumnName" placeholder="Nome da coluna" dense autofocus
                 @keyup.enter="confirmCreateColumn" />
@@ -167,3 +167,11 @@ onMounted(() => {
 
   <task-modal v-model="showTaskModal" :task="selectedTask" />
 </template>
+
+<style scoped>
+.kanban-column {
+  min-width: 300px;
+  max-width: 300px;
+  flex: 0 0 300px;
+}
+</style>

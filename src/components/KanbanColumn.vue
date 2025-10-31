@@ -7,6 +7,7 @@ import { useToast } from '../composables/useToast'
 import { useThemeStore } from '../stores/ThemeStore'
 
 const notification = useToast()
+const showDeleteDialog = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const themeStore = useThemeStore()
 
@@ -50,7 +51,12 @@ function cancelCreateTask() {
     newTaskTitle.value = ""
 }
 
-function deleteList() {
+function openDeleteConfirmation() {
+    showDeleteDialog.value = true
+}
+
+async function confirmDelete() {
+    showDeleteDialog.value = false
     emit('delete-column', props.columnId)
 }
 
@@ -83,7 +89,7 @@ function onTaskMoved(evt: SortableTask) {
 </script>
 
 <template>
-    <v-col class="rounded-lg border bg-gray-100 px-2 py-2 mr-2">
+    <v-col class="kanban-column rounded-lg border bg-gray-100 px-2 py-2 mr-2">
         <v-row>
             <v-col cols="8" class="text-h7">
                 <template v-if="editingTitle">
@@ -106,11 +112,26 @@ function onTaskMoved(evt: SortableTask) {
                         <v-list-item prepend-icon="mdi-pencil" @click="editList">
                             <v-list-item-title>Editar</v-list-item-title>
                         </v-list-item>
-                        <v-list-item prepend-icon="mdi-trash-can" @click="deleteList">
+                        <v-list-item prepend-icon="mdi-trash-can" @click="openDeleteConfirmation">
                             <v-list-item-title>Excluir</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
+
+                <v-dialog v-model="showDeleteDialog" max-width="400">
+                    <v-card>
+                        <v-card-title class="text-h6 ml-2">Excluir coluna</v-card-title>
+                        <v-card-text>
+                            Essa ação apagara todas as tarefas dessa coluna. Deseja continuar?
+                        </v-card-text>
+
+                        <v-card-actions class="justify-end">
+                            <v-btn variant="text" @click="showDeleteDialog = false">Cancelar</v-btn>
+                            <v-btn color="error" variant="tonal" @click="confirmDelete()">Confirmar</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
             </v-col>
         </v-row>
 
@@ -138,3 +159,11 @@ function onTaskMoved(evt: SortableTask) {
         </v-btn>
     </v-col>
 </template>
+
+<style scoped>
+.kanban-column {
+    min-width: 300px;
+    max-width: 300px;
+    flex: 0 0 300px;
+}
+</style>

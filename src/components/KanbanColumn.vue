@@ -4,14 +4,16 @@ import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
 import type { Task, SortableTask } from '../types/Models'
 import { useToast } from '../composables/useToast'
+import { useThemeStore } from '../stores/ThemeStore'
 
 const notification = useToast()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const themeStore = useThemeStore()
 
 const props = defineProps<{
     tasks: Task[]
     title: string
     columnId: string
-    theme?: string
 }>()
 
 const emit = defineEmits<{
@@ -48,16 +50,16 @@ function cancelCreateTask() {
     newTaskTitle.value = ""
 }
 
-function excluirLista() {
+function deleteList() {
     emit('delete-column', props.columnId)
 }
 
-function editarLista() {
+function editList() {
     editedTitle.value = props.title
     editingTitle.value = true
 }
 
-function salvarEdicao() {
+function saveEdit() {
     if (!editedTitle.value.trim()) {
         editingTitle.value = false
         notification.showToast('O nome da coluna não pode estar vazio', 'error')
@@ -68,7 +70,7 @@ function salvarEdicao() {
     notification.showToast('Coluna atualizada com sucesso', 'success')
 }
 
-function cancelarEdicao() {
+function cancelEdit() {
     editingTitle.value = false
 }
 
@@ -85,8 +87,8 @@ function onTaskMoved(evt: SortableTask) {
         <v-row>
             <v-col cols="8" class="text-h7">
                 <template v-if="editingTitle">
-                    <v-text-field v-model="editedTitle" dense hide-details autofocus @keyup.enter="salvarEdicao"
-                        @blur="cancelarEdicao" />
+                    <v-text-field v-model="editedTitle" dense hide-details autofocus @keyup.enter="saveEdit"
+                        @blur="cancelEdit" />
                 </template>
                 <template v-else>
                     {{ title }}
@@ -101,10 +103,10 @@ function onTaskMoved(evt: SortableTask) {
                     </template>
 
                     <v-list>
-                        <v-list-item prepend-icon="mdi-pencil" @click="editarLista">
+                        <v-list-item prepend-icon="mdi-pencil" @click="editList">
                             <v-list-item-title>Editar</v-list-item-title>
                         </v-list-item>
-                        <v-list-item prepend-icon="mdi-trash-can" @click="excluirLista">
+                        <v-list-item prepend-icon="mdi-trash-can" @click="deleteList">
                             <v-list-item-title>Excluir</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -112,19 +114,18 @@ function onTaskMoved(evt: SortableTask) {
             </v-col>
         </v-row>
 
-        <!-- tarefas -->
         <draggable :list="tasks" item-key="id" :animation="200" group="tasks" class="tasks-container"
             @change="onTaskMoved">
             <template #item="{ element }">
                 <div @click="emit('task-click', element)" style="cursor:pointer;">
-                    <task-card :task="element" :theme:="theme" class="task-card column-width mt-2" />
+                    <task-card :task="element" :theme:="themeStore.theme.value" class="task-card column-width mt-2" />
                 </div>
             </template>
         </draggable>
 
         <div v-if="creatingTask" class="mt-3">
             <v-text-field v-model="newTaskTitle" placeholder="Nome da tarefa" dense autofocus
-                @keyup.enter="confirmCreateTask" />
+                @keyup.enter="confirmCreateTask" @keyup.esc="cancelCreateTask" />
             <div class="flex space-x-2 mt-1">
                 <v-btn size="small" variant="flat" @click="confirmCreateTask">Salvar</v-btn>
                 <v-btn size="small" variant="text" @click="cancelCreateTask">Cancelar</v-btn>

@@ -3,16 +3,17 @@ import { ref, watch } from 'vue'
 import { useTaskStore } from '../stores/TaskStore'
 import type { Task } from '@/types/Models';
 import { useRelationStore } from '@/stores/RelationStore';
+import { useThemeStore } from '../stores/ThemeStore'
 import { useToast } from '../composables/useToast'
 
 const notification = useToast()
+const themeStore = useThemeStore()
+const taskStore = useTaskStore()
 
 const props = defineProps<{
     modelValue: boolean
     task: Task
 }>()
-
-const taskStore = useTaskStore()
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
@@ -64,11 +65,12 @@ async function saveTask() {
     emit('update:modelValue', false)
     notification.showToast('Tarefa atualizada com sucesso', 'success')
 }
+
 </script>
 
 <template>
     <v-dialog v-model="internalModel" max-width="500px" @update:modelValue="emit('update:modelValue', $event)">
-        <v-card class="overflow-hidden">
+        <v-card :color="themeStore.theme.value === 'dark' ? 'secondary' : 'grey-lighten-4'" class="overflow-hidden">
             <v-row class="align-center justify-space-between mt-2" no-gutters>
                 <v-col cols="12">
                     <v-textarea class="ml-6 mr-6 mt-4 mb-2" variant="underlined" density="compact" auto-grow rows="1"

@@ -12,13 +12,9 @@ import TaskModal from './components/TaskModal.vue'
 
 import { useToast } from './composables/useToast'
 import Toast from './components/ToastComponent.vue'
+import { useThemeStore } from './stores/ThemeStore'
 
-const theme = ref('light')
-
-function toggleTheme() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-}
-
+const themeStore = useThemeStore()
 const taskStore = useTaskStore()
 const columnStore = useColumnStore()
 const relationStore = useRelationStore()
@@ -96,7 +92,7 @@ async function deleteColumn(columnId: string) {
   notification.showToast('Coluna removida com sucesso', 'success')
 }
 
-async function upadateColumn(idColumn: string, newTitle: string) {
+async function updateColumn(idColumn: string, newTitle: string) {
   const column = columnStore.columns.find(c => c.id === idColumn)
   if (!column) {
     notification.showToast('Coluna não encontrada', 'error')
@@ -127,6 +123,7 @@ function openTaskModal(task: Task) {
 }
 
 onMounted(() => {
+  themeStore.fetchTheme()
   taskStore.fetchTasks()
   columnStore.fetchColumns()
   relationStore.fetchRelations()
@@ -134,8 +131,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-app :theme="theme" class="fluid fill-height">
-    <top-bar :theme="theme" @toggle-theme="toggleTheme" />
+  <v-app :theme="themeStore.theme.value" class="fluid fill-height">
+    <top-bar />
 
     <v-main>
       <Toast />
@@ -144,9 +141,8 @@ onMounted(() => {
 
           <KanbanColumn v-for="column in columnStore.columns" :key="column.id"
             :tasks="taskStore.tasks.filter(task => relationStore.relations.some(r => r.column_id == column.id && r.task_id == task.id))"
-            :title="column.title" :column-id="column.id" :theme="theme" @add-task="addTask($event, column)"
-            @task-click="openTaskModal" @task-moved="handleTaskMoved" @delete-column="deleteColumn"
-            @update-column="upadateColumn" />
+            :title="column.title" :column-id="column.id" @add-task="addTask($event, column)" @task-click="openTaskModal"
+            @task-moved="handleTaskMoved" @delete-column="deleteColumn" @update-column="updateColumn" />
 
           <v-col class="bg-gray-100 rounded-lg px-2 py-2 border border-dashed border-gray-400 mr-2">
             <template v-if="creatingColumn">

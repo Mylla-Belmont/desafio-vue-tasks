@@ -16,6 +16,11 @@ export interface Relation {
   task_id: string
 }
 
+export interface Theme {
+  id: string
+  value: string
+}
+
 export interface SortableTask<T = Task> {
   added?: {
     element: T

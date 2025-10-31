@@ -54,8 +54,8 @@ src/
 - [Vuetify 3](https://vuetifyjs.com/) – Biblioteca de componentes Material Design
 - [Vite](https://vitejs.dev/) – Bundler rápido para desenvolvimento
 - [TypeScript](https://www.typescriptlang.org/) – Tipagem estática
-- [JSON-Server] - Para persistência mínima de dados
-- [Pinia] – Para controle de estado global
+- JSON-Server - Para persistência mínima de dados
+- Pinia – Para controle de estado global
 - Git – Controle de versão
 
 ---

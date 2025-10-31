@@ -149,8 +149,8 @@ onMounted(() => {
               <v-text-field v-model="newColumnName" placeholder="Nome da coluna" dense autofocus
                 @keyup.enter="confirmCreateColumn" />
               <div class="flex space-x-2 mt-1">
-                <v-btn size="small" variant="flat" @click="confirmCreateColumn">Salvar</v-btn>
                 <v-btn size="small" variant="text" @click="cancelCreateColumn">Cancelar</v-btn>
+                <v-btn size="small" variant="flat" class="ml-2" @click="confirmCreateColumn">Salvar</v-btn>
               </div>
             </template>
 

@@ -75,7 +75,7 @@ async function saveTask() {
 
 <template>
     <v-dialog v-model="internalModel" max-width="500px" @update:modelValue="emit('update:modelValue', $event)">
-        <v-card :color="themeStore.theme.value === 'dark' ? 'secondary' : 'grey-lighten-4'" class="overflow-hidden">
+        <v-card :color="themeStore.theme.value === 'dark' ? 'ligth-purple' : 'grey-lighten-4'" class="overflow-hidden">
             <v-row class="align-center justify-space-between mt-2" no-gutters>
                 <v-col cols="12">
                     <v-textarea class="ml-6 mr-6 mt-4 mb-2" variant="underlined" density="compact" auto-grow rows="1"
@@ -104,7 +104,7 @@ async function saveTask() {
 
                     <v-col cols="auto" class="flex items-center space-x-2 mr-4">
                         <v-btn variant="tonal" @click="close">Cancelar</v-btn>
-                        <v-btn variant="tonal" class="ml-2" @click="saveTask">Salvar</v-btn>
+                        <v-btn variant="flat" class="ml-2" color="primary" @click="saveTask">Salvar</v-btn>
                     </v-col>
                 </v-row>
             </v-card-actions>

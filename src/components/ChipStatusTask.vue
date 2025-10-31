@@ -1,5 +1,5 @@
 <template>
-    <v-chip color="green" size="small" class="font-semibold" label variant="flat">
+    <v-chip color="success" size="small" class="font-semibold" variant="flat">
         <slot />
     </v-chip>
 </template>

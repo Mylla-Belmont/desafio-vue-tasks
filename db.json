@@ -2,15 +2,113 @@
   "theme": [
     {
       "id": "1",
-      "value": "dark"
+      "value": "light"
     }
   ],
   "columns": [
     {
       "id": "1",
-      "title": "Lista 1"
+      "title": "Em progresso"
+    },
+    {
+      "id": "2",
+      "title": "Finalizado"
+    },
+    {
+      "id": "3",
+      "title": "Funcionalidades"
     }
   ],
-  "tasks": [],
-  "relations": []
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Tarefa 1",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "2",
+      "title": "Tarefa 2",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "3",
+      "title": "Tarefa 3",
+      "description": "",
+      "is_completed": true
+    },
+    {
+      "id": "4",
+      "title": "Tarefa 4",
+      "description": "",
+      "is_completed": true
+    },
+    {
+      "id": "5",
+      "title": "É possível criar colunas e adicionar tarefas",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "6",
+      "title": "Assim como é possível editar e excluir elas",
+      "description": "",
+      "is_completed": false
+    },
+    {
+      "id": "7",
+      "title": "Você pode adicionar descrição e marcar como concluído ao clicar nas tarefas",
+      "description": "Como demonstrado aqui",
+      "is_completed": false
+    },
+    {
+      "id": "8",
+      "title": "E também alterar o thema do sistema (light ou dark mode)",
+      "description": "",
+      "is_completed": false
+    }
+  ],
+  "relations": [
+    {
+      "id": "1",
+      "column_id": "1",
+      "task_id": "1"
+    },
+    {
+      "id": "2",
+      "column_id": "1",
+      "task_id": "2"
+    },
+    {
+      "id": "3",
+      "column_id": "2",
+      "task_id": "3"
+    },
+    {
+      "id": "4",
+      "column_id": "2",
+      "task_id": "4"
+    },
+    {
+      "id": "5",
+      "column_id": "3",
+      "task_id": "5"
+    },
+    {
+      "id": "6",
+      "column_id": "3",
+      "task_id": "6"
+    },
+    {
+      "id": "7",
+      "column_id": "3",
+      "task_id": "7"
+    },
+    {
+      "id": "8",
+      "column_id": "3",
+      "task_id": "8"
+    }
+  ]
 }

@@ -139,7 +139,8 @@ function onTaskMoved(evt: SortableTask) {
             @change="onTaskMoved">
             <template #item="{ element }">
                 <div @click="emit('task-click', element)" style="cursor:pointer;">
-                    <task-card :task="element" :theme:="themeStore.theme.value" class="task-card column-width mt-2" />
+                    <task-card :task="element" :theme:="themeStore.theme.value" color="primary"
+                        class="task-card column-width mt-2" />
                 </div>
             </template>
         </draggable>
@@ -148,8 +149,8 @@ function onTaskMoved(evt: SortableTask) {
             <v-text-field v-model="newTaskTitle" placeholder="Nome da tarefa" dense autofocus
                 @keyup.enter="confirmCreateTask" @keyup.esc="cancelCreateTask" />
             <div class="flex space-x-2 mt-1">
-                <v-btn size="small" variant="flat" @click="confirmCreateTask">Salvar</v-btn>
                 <v-btn size="small" variant="text" @click="cancelCreateTask">Cancelar</v-btn>
+                <v-btn size="small" variant="flat" class="ml-2" @click="confirmCreateTask">Salvar</v-btn>
             </div>
         </div>
 
